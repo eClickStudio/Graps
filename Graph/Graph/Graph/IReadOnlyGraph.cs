@@ -13,6 +13,8 @@
         int EdgeCount { get; }
         int FaceCount { get; }
 
+        bool isEmpty { get; }
+
         /// <summary>
         /// Checks if there is a vertex in the graph.
         /// </summary>

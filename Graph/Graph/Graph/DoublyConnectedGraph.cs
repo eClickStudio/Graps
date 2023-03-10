@@ -35,6 +35,8 @@ namespace Graphs.DoubleConnected
             }
         }
 
+        public bool isEmpty => _vertices.Count == 0;
+
         public IReadOnlyList<T> Vertices => _vertices.Keys.ToList();
 
         public IReadOnlyList<T> this[T vertex]
@@ -272,12 +274,22 @@ namespace Graphs.DoubleConnected
 
                         if (removeVertices)
                         {
-                            RemoveVertex(distinctVertices[i]);
-                            RemoveVertex(distinctVertices[nearIndex]);
+                            if (HasVertex(distinctVertices[i]))
+                            {
+                                RemoveVertex(distinctVertices[i]);
+                            }
+
+                            if (HasVertex(distinctVertices[nearIndex]))
+                            {
+                                RemoveVertex(distinctVertices[nearIndex]);
+                            }
                         }
                         else
                         {
-                            RemoveConnection(distinctVertices[i], distinctVertices[nearIndex]);
+                            if (HasEdge(distinctVertices[i], distinctVertices[nearIndex]))
+                            {
+                                RemoveConnection(distinctVertices[i], distinctVertices[nearIndex]);
+                            }
                         }
                     }
                 }
@@ -301,9 +313,14 @@ namespace Graphs.DoubleConnected
         #region Subgraph
         public bool HasSubgraph(in IReadOnlyGraph<T> subgraph)
         {
+            if (subgraph.isEmpty)
+            {
+                throw new ArgumentException("You can't check because subgraph is empty.");
+            }
+
             if (subgraph == null)
             {
-                throw new ArgumentNullException("You can't merge with a graph because it can't be null.");
+                throw new ArgumentNullException("You can't check because subgraph is null.");
             }
 
             foreach (T firstVertex in subgraph.Vertices)
@@ -322,6 +339,11 @@ namespace Graphs.DoubleConnected
 
         public void AddSubgraph(in IReadOnlyGraph<T> subgraph)
         {
+            if (subgraph.isEmpty)
+            {
+                throw new ArgumentException("You can't add a subgraph because it is empty.");
+            }
+
             if (subgraph == null)
             {
                 throw new ArgumentNullException("You can't add a subgraph because it is null.");
@@ -350,6 +372,16 @@ namespace Graphs.DoubleConnected
 
         public void RemoveSubgraph(in IReadOnlyGraph<T> subgraph, bool removeVertices = false)
         {
+            if (subgraph.isEmpty)
+            {
+                throw new ArgumentException("You can't remove a subgraph because it is empty.");
+            }
+
+            if (subgraph == null)
+            {
+                throw new ArgumentNullException("You can't remove a subgraph because it is null.");
+            }
+
             foreach (T firstVertex in subgraph.Vertices)
             {
                 foreach (T secondVertex in subgraph[firstVertex])
